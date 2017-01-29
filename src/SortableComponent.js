@@ -7,7 +7,6 @@ import {
   SortableContainer, SortableElement, arrayMove
 }
   from 'react-sortable-hoc';
-import {update} from 'immutability-helper';
 
 const SortableItem = SortableElement(({value}) => <Panel>{value}</Panel>);
 
@@ -30,21 +29,10 @@ export class SortableComponent extends Component {
   };
 
   addElementToList() {
-    const i = this.state.items.length;
-    const newState = ()=> {
-      update(this.state,
-        {
-          items: {
-            $push: [
-              {
-                [i]: this.state.field
-              }
-            ]
-          }
-        }
-      )
-    };
-    this.setState = newState;
+    const newState = Object.assign({}, {
+      items: [...this.state.items, this.state.field]
+    });
+    this.setState(newState);
   }
 
   setFieldState(event) {
