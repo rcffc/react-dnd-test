@@ -3,7 +3,7 @@
  */
 import React, {Component} from 'react';
 import {
-  Button, ControlLabel, FormControl,
+  Button, FormControl,
   PageHeader, Row
 } from 'react-bootstrap';
 import {
@@ -15,23 +15,21 @@ import './dragHandle.css'
 
 export class SortableComponent extends Component {
   state = {
-    items: ['Question 1', 'Question 2', 'Question 3']
+    items: ['']
   };
 
   DragHandle = SortableHandle(() =>
     <span className="grippy"></span>
   );
 
-  SortableItem = SortableElement(({value,key}) =>
+  SortableItem = SortableElement(({value, myIndex}) =>
     <Row>
       <this.DragHandle/>
-      <ControlLabel>Question</ControlLabel>
       <FormControl
         componentClass="textarea"
         placeholder="Enter question"
-        onChange={()=> {
-          console.log(key);       //why undefined??
-          console.log(value);
+        onChange={(event)=> {
+          this.setFieldState(myIndex, event);
         }
         }
       />
@@ -43,7 +41,8 @@ export class SortableComponent extends Component {
         {items.map((value, index) =>
           <this.SortableItem key={`item-${index}`}
                              index={index}
-                             value={value}/>
+                             value={value}
+                             myIndex={index}/>
         )}
       </div>
     );
@@ -51,21 +50,18 @@ export class SortableComponent extends Component {
 
   addElement() {
     const newState = Object.assign({}, {
-      items: [...this.state.items,
-        'Question ' + (this.state.items.length + 1)]
+      items: [...this.state.items, '']
     });
     this.setState(newState);
   }
 
-  setFieldState(event, key) {
-    console.log('event', event);
-    console.log('key', key);
+  setFieldState(key, event) {
     let len = this.state.items.length;
     const newState = Object.assign({}, {
       items: [
         ...this.state.items.slice(0, key),
-        'Question new' + (len + 1)],
-      ...this.state.items.slice(key, len)
+        event.target.value,
+        ...this.state.items.slice(key + 1, len)]
     });
     this.setState(newState)
   }
